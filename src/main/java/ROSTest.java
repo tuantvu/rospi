@@ -23,7 +23,7 @@ public class ROSTest {
 	 * @throws Exception 
 	 */
 	public static void main(String[] args) throws Exception {
-		core = RosCore.newPublic(13111);
+		core = RosCore.newPublic(NodeConfiguration.DEFAULT_MASTER_URI.getPort());
 		core.start();
 		try {
 			core.awaitStart();
@@ -44,12 +44,12 @@ public class ROSTest {
 	    NodeMain talker = new Talker();
 	    e.execute(talker, talkerConfig);
 	    
-	    System.out.println("Starting listener node...");
-	    NodeConfiguration listenerConfig = NodeConfiguration.newPrivate();
-	    listenerConfig.setMasterUri(core.getUri());
-	    listenerConfig.setNodeName("Listener");
-	    NodeMain listener = new Listener();
-	    e.execute(listener, listenerConfig);
+//	    System.out.println("Starting listener node...");
+//	    NodeConfiguration listenerConfig = NodeConfiguration.newPrivate();
+//	    listenerConfig.setMasterUri(core.getUri());
+//	    listenerConfig.setNodeName("Listener");
+//	    NodeMain listener = new Listener();
+//	    e.execute(listener, listenerConfig);
 	}
 	
 	
