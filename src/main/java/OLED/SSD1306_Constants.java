@@ -50,4 +50,5 @@ public class SSD1306_Constants {
     public static final int LCD_HEIGHT_16 = 16;
 
 	public final static int STRING_HEIGHT = 16;
+	public final static int SELECTOR_OFFSET = STRING_HEIGHT / 2;
 }

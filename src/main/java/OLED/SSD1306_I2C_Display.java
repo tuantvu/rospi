@@ -3,6 +3,13 @@
  */
 package OLED;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.io.IOException;
+
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
@@ -12,12 +19,8 @@ import com.pi4j.io.i2c.I2CFactory;
 import com.pi4j.io.i2c.I2CFactory.UnsupportedBusNumberException;
 import com.pi4j.wiringpi.I2C;
 
+import OLED.Menu.MenuItem;
 import component.GpioSingleton;
-
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.io.IOException;
 
 /**
  * @author Tuan Vu
@@ -34,6 +37,7 @@ public class SSD1306_I2C_Display {
     private int fd;
     private byte[] buffer;
     
+    private final static int SELECTOR_SIZE = 8;
     
 
     /**
@@ -48,6 +52,7 @@ public class SSD1306_I2C_Display {
 				GpioSingleton.getInstance().get(), 
 				I2CFactory.getInstance(I2C.CHANNEL_1),
 				0x3c);
+		
 	}
 
 	/**
@@ -369,6 +374,15 @@ public class SSD1306_I2C_Display {
      * @see SSD1306_I2C_Display#display()
      */
     public synchronized void displayImage() {
+        setImagePixels();
+        this.display();
+    }
+    
+    /**
+     * Copies AWT image contents to buffer
+     * @see SSD1306_I2C_Display#display()
+     */
+    public synchronized void setImagePixels() {
         Raster r = this.img.getRaster();
 
         for (int y = 0; y < this.height; y++) {
@@ -376,8 +390,6 @@ public class SSD1306_I2C_Display {
                 this.setPixel(x, y, (r.getSample(x, y, 0) > 0));
             }
         }
-
-        this.display();
     }
 
     /**
@@ -457,5 +469,39 @@ public class SSD1306_I2C_Display {
         value &= 0xFF;
         I2C.wiringPiI2CWriteReg8(this.fd, register, value);
     }
+    
+    
+    /*
+     * ===================================
+     * HIGH LEVEL FUNCTIONS
+     * ===================================
+     */
+    
+    public void setMenu(MenuItem...menuItems){
+    	clearImage();
+    	for (int i = 0; i < menuItems.length; i++) {
+        	graphics.drawString(menuItems[i].getName(), 
+        			SELECTOR_SIZE, SSD1306_Constants.STRING_HEIGHT * (i + 1));
+		}
+		setImagePixels();
+    }
+    
+    private void clearMenuSelection(){
+    	for (int i = 0; i < SELECTOR_SIZE; i++){
+    		for (int j = 0; j < height; j++){
+    			setPixel(i, j, false);
+    		}
+    	}
+    }
+    
+    public void setMenuSelection(int position) {
+    	clearMenuSelection();
+    	int offset = position * SSD1306_Constants.STRING_HEIGHT + SSD1306_Constants.SELECTOR_OFFSET;
+    	for (int i = 0; i < DisplayBitMaps.SELECTOR.length; i++){
+    		Point p = DisplayBitMaps.SELECTOR[i];
+    		setPixel(p.x, p.y + offset, true);
+    	}
+    }
 
+    
 }

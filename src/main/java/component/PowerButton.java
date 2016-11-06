@@ -10,7 +10,6 @@ import com.pi4j.component.switches.SwitchState;
 import com.pi4j.component.switches.SwitchStateChangeEvent;
 import com.pi4j.component.switches.impl.GpioMomentarySwitchComponent;
 import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.PinState;
@@ -26,7 +25,7 @@ public class PowerButton {
 	//Switch Operations
 	private final static int SHUTDOWN_TIME = 5;
 	private final static long SHUTDOWN_MILLIS = 4000;
-	private final static long WAIT_MILLIS = 2000;
+	private final static long LONG_PRESS_MILLIS = 500;
 	private boolean isButtonPressed = false;
 	private long buttonPressTimeStamp = 0;
 	private boolean isShuttingDown = false;
@@ -34,7 +33,6 @@ public class PowerButton {
 		
 	//Robot
 	private GpioController gpio;
-	private boolean isRobotOn = false;
 	private Callback callback;
 
 	public PowerButton () {
@@ -74,26 +72,15 @@ public class PowerButton {
 	private void handleButtonUnpress() {
 		//Only turn on/off robot if the shut down sequence has not been started
 		//Also can not issue instructions WAIT_MILLIS from each other
-		if (!isShuttingDown &&
-				System.currentTimeMillis() - lastInstructionTimeStamp > WAIT_MILLIS) {
+		if (!isShuttingDown) {
 		
-			if (isRobotOn){
-				//Turn robot off
-				System.out.println("Turning Robot Off");
-				callback.onPowerOff();
-				isRobotOn = false;
+			long currentTS = System.currentTimeMillis();
+			
+			if (currentTS - buttonPressTimeStamp > LONG_PRESS_MILLIS){
+				callback.onLongPress();
 			}
 			else {
-				//Turn robot on
-				System.out.println("Turning Robot On");
-				callback.onPowerOn();
-//				showDisplay("Turning Robot On");
-//				boolean isBluetoothSuccessful = bluetooth.start();
-//				if (!isBluetoothSuccessful) {
-//					showDisplay("ERROR");
-//				}
-//				isRobotOn = isBluetoothSuccessful;
-				isRobotOn = true;
+				callback.onShortPress();
 			}
 			lastInstructionTimeStamp = System.currentTimeMillis();
 		}
@@ -162,8 +149,8 @@ public class PowerButton {
     }
 	
 	public interface Callback{
-        void onPowerOn();
-        void onPowerOff();
+		void onShortPress();
+		void onLongPress();
         void onShutdown(String shutdownString);
     }
 	

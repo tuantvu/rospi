@@ -30,13 +30,13 @@ public class Motor
         gpio = GpioSingleton.getInstance().get();
         
         // initialise instance variables
-        if (type == MotorType.RIGHT)
+        if (type == MotorType.LEFT)
         {
             speedPin = gpio.provisionPwmOutputPin(RaspiPin.GPIO_23, "SPEED", 0);
             forwardPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_24, "FORWARD", PinState.LOW);
             backwardPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_25, "BACKWARD", PinState.LOW);
         }
-        else if (type == MotorType.LEFT)
+        else if (type == MotorType.RIGHT)
         {
             speedPin = gpio.provisionPwmOutputPin(RaspiPin.GPIO_26, "SPEED", 0);
             forwardPin = gpio.provisionDigitalOutputPin(RaspiPin.GPIO_27, "FORWARD", PinState.LOW);

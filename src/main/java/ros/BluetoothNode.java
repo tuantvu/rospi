@@ -51,23 +51,23 @@ public class BluetoothNode extends AbstractNodeMain {
 		});
 		
 		//Set up sub
-		Subscriber<std_msgs.Bool> subscriber = connectedNode.newSubscriber(ROSConstants.POWER_BUTTON_TOPIC, std_msgs.Bool._TYPE);
-	    subscriber.addMessageListener(new MessageListener<std_msgs.Bool>() {
-	      @Override
-	      public void onNewMessage(std_msgs.Bool bool) {
-	        if (bool.getData()) {
-	        	boolean isSuccessful = bluetooth.start();
-	        	if (!isSuccessful) {
-	        		std_msgs.String str = publisher.newMessage();
-					str.setData("Bluetooth Error");
-					publisher.publish(str);
-	        	}
-	        }
-	        else {
-	        	bluetooth.stop();
-	        }
-	      }
-	    });
+//		Subscriber<std_msgs.Bool> subscriber = connectedNode.newSubscriber(ROSConstants.POWER_BUTTON_TOPIC, std_msgs.Bool._TYPE);
+//	    subscriber.addMessageListener(new MessageListener<std_msgs.Bool>() {
+//	      @Override
+//	      public void onNewMessage(std_msgs.Bool bool) {
+//	        if (bool.getData()) {
+//	        	boolean isSuccessful = bluetooth.start();
+//	        	if (!isSuccessful) {
+//	        		std_msgs.String str = publisher.newMessage();
+//					str.setData("Bluetooth Error");
+//					publisher.publish(str);
+//	        	}
+//	        }
+//	        else {
+//	        	bluetooth.stop();
+//	        }
+//	      }
+//	    });
 	}
 
 	@Override
