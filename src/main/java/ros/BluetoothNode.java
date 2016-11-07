@@ -21,6 +21,8 @@ import component.BluetoothListener;
 public class BluetoothNode extends AbstractNodeMain {
 	private BluetoothListener bluetooth;
 	private Publisher<std_msgs.String> publisher;
+	private Publisher<std_msgs.String> blueToothConnectPublisher;
+	private boolean bluetoothStart = false;
 
 	/* (non-Javadoc)
 	 * @see org.ros.node.NodeMain#getDefaultNodeName()
@@ -50,24 +52,7 @@ public class BluetoothNode extends AbstractNodeMain {
 			}
 		});
 		
-		//Set up sub
-//		Subscriber<std_msgs.Bool> subscriber = connectedNode.newSubscriber(ROSConstants.POWER_BUTTON_TOPIC, std_msgs.Bool._TYPE);
-//	    subscriber.addMessageListener(new MessageListener<std_msgs.Bool>() {
-//	      @Override
-//	      public void onNewMessage(std_msgs.Bool bool) {
-//	        if (bool.getData()) {
-//	        	boolean isSuccessful = bluetooth.start();
-//	        	if (!isSuccessful) {
-//	        		std_msgs.String str = publisher.newMessage();
-//					str.setData("Bluetooth Error");
-//					publisher.publish(str);
-//	        	}
-//	        }
-//	        else {
-//	        	bluetooth.stop();
-//	        }
-//	      }
-//	    });
+		subscribeToBlueToothConnectTopic(connectedNode);
 	}
 
 	@Override
@@ -83,6 +68,65 @@ public class BluetoothNode extends AbstractNodeMain {
 		}
 	}
 	
+	/**
+	 * @param connectedNode
+	 */
+	private void subscribeToBlueToothConnectTopic(ConnectedNode connectedNode) {
+		//Bluetooth Connect Topic Subscriber
+		blueToothConnectPublisher = connectedNode.newPublisher(
+				ROSConstants.BLUETOOTH_CONNECT_TOPIC, std_msgs.String._TYPE);
+		
+		//Bluetooth Connect Topic Subscriber
+		Subscriber<std_msgs.String> overrideSubscriber = connectedNode.newSubscriber(
+				ROSConstants.BLUETOOTH_CONNECT_TOPIC, std_msgs.String._TYPE);
+	    overrideSubscriber.addMessageListener(new MessageListener<std_msgs.String>() {
+	      @Override
+	      public void onNewMessage(std_msgs.String message) {
+	    	  String messageString = message.getData();
+	    	  if (ROSConstants.BLUETOOTH_CONNECT_START.equals(messageString)) {
+	    		  bluetoothStart = true;
+	    		  new SerialConnectThread().start();
+	    	  }
+	    	  else if (ROSConstants.BLUETOOTH_CONNECT_STOP.equals(messageString)) {
+	    		  bluetoothStart = false;
+	    		  boolean disconnectSuccessful = bluetooth.stop();
+	    		  if (disconnectSuccessful) {
+	    			  ROSUtils.publishString(blueToothConnectPublisher, ROSConstants.BLUETOOTH_CONNECT_DISCONNECTED);
+	    		  }
+	    		  else {
+	    			  ROSUtils.publishString(blueToothConnectPublisher, ROSConstants.BLUETOOTH_CONNECT_DISCONNECT_FAIL);
+	    		  }
+	    	  }
+	      }
+	    });
+	}
 	
+	class SerialConnectThread extends Thread {
+
+		/* (non-Javadoc)
+		 * @see java.lang.Thread#run()
+		 */
+		@Override
+		public void run() {
+			boolean isConnected = bluetooth.start();
+			while (bluetoothStart && !isConnected) {
+				ROSUtils.publishString(blueToothConnectPublisher, ROSConstants.BLUETOOTH_CONNECT_WAITING);
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				isConnected = bluetooth.start();
+			}
+			if (isConnected) {
+				ROSUtils.publishString(blueToothConnectPublisher, ROSConstants.BLUETOOTH_CONNECT_CONNECTED);
+			}
+			else {
+				ROSUtils.publishString(blueToothConnectPublisher, ROSConstants.BLUETOOTH_CONNECT_CONNECT_FAIL);
+			}
+			
+		}
+		
+	}
 
 }

@@ -16,8 +16,8 @@ public class MenuGroupItem extends MenuItem {
 	protected ArrayList<MenuItem> menuItems;
 	private int currentPosition;
 	
-	public MenuGroupItem(String name, SSD1306_I2C_Display display) {
-		super(name, null);
+	public MenuGroupItem(String name, SSD1306_I2C_Display display, MenuItemCallback callback) {
+		super(name, null, callback);
 		this.display = display;
 		this.menuItems = new ArrayList<>();
 		this.currentPosition = 0;

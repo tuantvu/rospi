@@ -3,6 +3,8 @@
  */
 package OLED.Menu;
 
+import OLED.Menu.MenuItem.MenuItemCallback;
+
 /**
  * @author Tuan
  *

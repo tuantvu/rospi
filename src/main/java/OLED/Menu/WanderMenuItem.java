@@ -4,6 +4,7 @@
 package OLED.Menu;
 
 import OLED.SSD1306_I2C_Display;
+import OLED.Menu.MenuItem.MenuItemCallback;
 
 /**
  * @author Tuan
@@ -12,8 +13,8 @@ import OLED.SSD1306_I2C_Display;
 public class WanderMenuItem extends MenuItem {
 	SSD1306_I2C_Display display;
 
-	public WanderMenuItem(SSD1306_I2C_Display display, MenuGroupItem parent) {
-		super("Wander", parent);
+	public WanderMenuItem(SSD1306_I2C_Display display, MenuGroupItem parent, MenuItemCallback callback) {
+		super("Wander", parent, callback);
 		this.display = display;
 	}
 

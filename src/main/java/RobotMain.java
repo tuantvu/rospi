@@ -33,7 +33,7 @@ public class RobotMain {
 		execute("Bluetooth", new BluetoothNode());
 		execute("Motor", new MotorNode());
 		execute("Action", new ActionNode());
-		execute("IRSensor", new IRSensorNode());
+		//execute("IRSensor", new IRSensorNode());
 		execute("Proximity", new ProximitySensorNode());
 	}
 	

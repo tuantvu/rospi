@@ -4,16 +4,18 @@
 package OLED.Menu;
 
 import OLED.SSD1306_I2C_Display;
+import OLED.ScrollableLog;
 
 /**
  * @author Tuan
  *
  */
 public class LogMenuItem extends MenuItem {
-	SSD1306_I2C_Display display;
+	private SSD1306_I2C_Display display;
+	private ScrollableLog logs;
 
-	public LogMenuItem(SSD1306_I2C_Display display, MenuGroupItem parent) {
-		super("Logs", parent);
+	public LogMenuItem(SSD1306_I2C_Display display, MenuGroupItem parent, MenuItemCallback callback) {
+		super("Logs", parent, callback);
 		this.display = display;
 	}
 
@@ -22,8 +24,15 @@ public class LogMenuItem extends MenuItem {
 	 */
 	@Override
 	public MenuItem doMenuAction() {
-		display.displayString("Logging");
+		this.logs = callback.getLog();
+		logs.scrollTo(0);
+		display.displayString(logs.get());
 		return this;
 	}
 
+	@Override
+	public void doShortPress() {
+		logs.scroll();
+		display.displayString(logs.get());
+	}
 }

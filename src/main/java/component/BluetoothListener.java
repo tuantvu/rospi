@@ -72,19 +72,18 @@ public class BluetoothListener
         }
     }
     
-    public void stop()
+    public boolean stop()
     {
     	if (serial != null){
 	    	try {
 				serial.close();
-			} catch (IllegalStateException e) {
-				// TODO Auto-generated catch block
+				return true;
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}	
+				return false;
+			}
     	}
+    	return false;
     }
     
     public static interface Callback{
