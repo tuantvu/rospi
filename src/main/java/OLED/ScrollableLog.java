@@ -42,25 +42,17 @@ public class ScrollableLog {
 	 */
 	public void add(String log) {
 		//Compare the previous log and count them up.
-		System.out.println("LOGS: " + logs);
 		if (!logs.isEmpty()) {
 			String prev = logs.get(logs.size() - 1);
-			System.out.println("prev: " + prev);
-			System.out.println("log: " + log);
 			if (prev.contains(log)) {
 				String stripped = prev.replace(log, "");
-				System.out.println("stripped: " + stripped);
 				stripped = stripped.replace("~x", "");
-				System.out.println("stripped again: " + stripped);
 				int currentCount = 1;
 				if (NumberUtils.isNumber(stripped)) {
 					currentCount = NumberUtils.toInt(stripped);
 				}
-				System.out.println("currentCount: " + currentCount);
 				log += "~x" + (currentCount + 1);
-				System.out.println("log: " + log);
 				logs.remove(logs.size() - 1);
-				System.out.println("LOGS: " + logs);
 			}
 		}
 		logs.add(log);

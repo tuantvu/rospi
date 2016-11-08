@@ -32,12 +32,17 @@ public class IRSensorNode extends AbstractNodeMain {
 			
 			@Override
 			protected void loop() throws InterruptedException {
-				double reading = sensor.getReading();
-				std_msgs.Float64 value = publisher.newMessage();
-				value.setData(reading);
-				publisher.publish(value);
-				System.out.println(reading);
-				Thread.sleep(250);
+				double readingTotal = 0.0;
+				for (int i = 0; i < 10; i++) {
+					double reading = sensor.getReading();
+					readingTotal += reading;
+					std_msgs.Float64 value = publisher.newMessage();
+					value.setData(reading);
+					publisher.publish(value);
+//					System.out.println(reading);
+					Thread.sleep(100);
+				}
+				System.out.println("Avg: " + (readingTotal / 10.0));
 			}
 		});
 	}

@@ -4,8 +4,13 @@ import org.ros.node.NodeConfiguration;
 import org.ros.node.NodeMain;
 import org.ros.node.NodeMainExecutor;
 
+import ros.ActionNode;
+import ros.BluetoothNode;
 import ros.DisplayNode;
+import ros.IRSensorNode;
+import ros.MotorNode;
 import ros.PowerNode;
+import ros.ProximitySensorNode;
 
 /**
  * 
@@ -38,6 +43,11 @@ public class PowerMainAlt {
 	private static void run() {
 		execute("Power", new PowerNode());
 		execute("Display", new DisplayNode());
+		execute("Bluetooth", new BluetoothNode());
+		execute("Motor", new MotorNode());
+		execute("Action", new ActionNode());
+		execute("IRSensor", new IRSensorNode());
+		execute("Proximity", new ProximitySensorNode());
 	}
 	
 	private static void execute(String name, NodeMain node) {
